@@ -1,0 +1,18 @@
+{
+  "scripts": {
+    "start": "parcel pedestal-3D/index.html",
+    "build": "parcel build pedestal-3D/index.html --dist-dir docs  --no-source-maps --public-url ./"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.19.1",
+    "@parcel/babel-preset-env": "^2.7.0",
+    "@parcel/transformer-glsl": "^2.8.3",
+    "parcel": "^2.7.0",
+    "process": "^0.11.10",
+    "url": "^0.11.0"
+  },
+  "dependencies": {
+    "gl-matrix": "^3.4.3",
+    "glsl-shader-loader": "^0.1.6"
+  }
+}
