@@ -1,18 +1,18 @@
 import cubeVS from '../../pedestal-3D/shaders/cubeVS.glsl'
 import cubeFS from '../../pedestal-3D/shaders/cubeFS.glsl'
 import * as glm from "gl-matrix";
-import {mod} from "glsl-shader-loader/src/utils/constructor-mask";
 
 const canvas = document.querySelector('canvas');
 let gl;
-let deltaTime = 0;
+
 let controls = {
+    pedestal_center: [],
     current_rotator: "gold",
-    rotation_angle_gold: -1.0,
-    rotation_angle_silver: -1.0,
-    rotation_angle_bronze: -1.0,
-    rotation_angle_pedestal_2itself: 0.2,
-    rotation_angle_pedestal_2scene: 0.2,
+    rotation_angle_gold: 0.0,
+    rotation_angle_silver: 0.0,
+    rotation_angle_bronze: 0.0,
+    rotation_angle_pedestal_2itself: 0.0,
+    rotation_angle_pedestal_2scene: 0.0,
 }
 
 function initWebGL(canvas) {
@@ -49,25 +49,19 @@ function main() {
 
     gl.useProgram(shaderProgram);
 
-    let then = 0;
-
     window.addEventListener("keydown", checkKeyPressed);
 
-    // Draw the scene repeatedly
-    function render(now) {
-        now *= 0.001; // convert to seconds
-        deltaTime = now - then;
-        then = now;
+    function render() {
 
         if(shaderProgram) {
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
             gl.clearDepth(1.0);
             drawCube(shaderProgram, controls.rotation_angle_gold,
-                [1.0, 0.85, 0.0, 1.0], [1.0, -1.0, -9.0],
-                controls.rotation_angle_pedestal_2itself, controls.rotation_angle_pedestal_2scene);
-            drawCube(shaderProgram, controls.rotation_angle_gold, [1.0, 0.85, 0.0, 1.0],[1.0, 1.0, -9.0], controls.rotation_angle_pedestal_2itself, controls.rotation_angle_pedestal_2scene);
-            drawCube(shaderProgram, controls.rotation_angle_silver, [0.75, 0.75, 0.75, 1.0],[-2.0, -1.0, -9.0], controls.rotation_angle_pedestal_2itself, controls.rotation_angle_pedestal_2scene);
-            drawCube(shaderProgram, controls.rotation_angle_bronze, [0.8, 0.5, 0.2, 1.0],[4.0, -1.0, -9.0], controls.rotation_angle_pedestal_2itself, controls.rotation_angle_pedestal_2scene);
+                [1.0, 0.85, 0.0, 1.0], [2.0, -1.0, -15.0],
+                controls.rotation_angle_pedestal_2itself, controls.rotation_angle_pedestal_2scene, "gold1");
+            drawCube(shaderProgram, controls.rotation_angle_gold, [1.0, 0.85, 0.0, 1.0],[2.0, 1.0, -15.0], controls.rotation_angle_pedestal_2itself, controls.rotation_angle_pedestal_2scene, "gold2");
+            drawCube(shaderProgram, controls.rotation_angle_silver, [0.75, 0.75, 0.75, 1.0],[-1.0, -1.0, -15.0], controls.rotation_angle_pedestal_2itself, controls.rotation_angle_pedestal_2scene, "silver");
+            drawCube(shaderProgram, controls.rotation_angle_bronze, [0.8, 0.5, 0.2, 1.0],[5.0, -1.0, -15.0], controls.rotation_angle_pedestal_2itself, controls.rotation_angle_pedestal_2scene, "bronze");
         }
         requestAnimationFrame(render);
     }
@@ -170,12 +164,10 @@ function checkKeyPressed(e) {
 
 main();
 
-function drawCube(shaderProgram, rotationAngle, color, vec_translate, rotate2itself, rotate2scene) {
+function drawCube(shaderProgram, rotationAngle, color, vec_translate, rotate2itself, rotate2scene, cube_type) {
 //    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 //    gl.clearDepth(1.0);
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
-    let c = rotate2itself;
-    let g = rotate2scene;
 
     const vertices = [
         // Front face
@@ -216,19 +208,50 @@ function drawCube(shaderProgram, rotationAngle, color, vec_translate, rotate2its
     const projectionMatrix = glm.mat4.create();
 
     glm.mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
-    //glm.mat4.rotate(projectionMatrix, projectionMatrix, rotationAngle, [0, 1, 0]);
+
     const modelViewMatrix = glm.mat4.create();
-    glm.mat4.translate(modelViewMatrix, modelViewMatrix, vec_translate);
 
-    //let rotationMatrix = glm.mat4.create();
+    switch (cube_type) {
+        case "gold1":
+            glm.mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, -1.0, -15]);
+            glm.mat4.rotate(modelViewMatrix, modelViewMatrix, rotate2scene, [0, 1, 0]);
+            glm.mat4.translate(modelViewMatrix, modelViewMatrix, [5.0, 0.0, 0.0]);
+            glm.mat4.rotate(modelViewMatrix, modelViewMatrix, rotationAngle + rotate2itself, [0, 1, 0]);
+            break;
+        case "gold2":
+            glm.mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, 1.0, -15]);
+            glm.mat4.rotate(modelViewMatrix, modelViewMatrix, rotate2scene, [0, 1, 0]);
+            glm.mat4.translate(modelViewMatrix, modelViewMatrix, [5.0, 0.0, 0.0]);
+            glm.mat4.rotate(modelViewMatrix, modelViewMatrix, rotationAngle + rotate2itself, [0, 1, 0]);
+            break;
+        case "silver":
+            glm.mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, -1.0, -15]);
+            glm.mat4.rotate(modelViewMatrix, modelViewMatrix, rotate2scene, [0, 1, 0]);
+            // Translate the cube to the center of rotation
+            glm.mat4.translate(modelViewMatrix, modelViewMatrix, [5.0, 0, 0]);
 
-    //glm.mat4.fromYRotation(rotationMatrix, controls.rotation_angle_pedestal_2scene);
+            // Rotate the cube around its center
+            glm.mat4.rotate(modelViewMatrix, modelViewMatrix, rotate2itself, [0, 1, 0]);
 
+            // Translate the cube back to its original position
+            glm.mat4.translate(modelViewMatrix, modelViewMatrix, [-3.0, 0.0, 0.0]);
+            glm.mat4.rotate(modelViewMatrix, modelViewMatrix, rotationAngle, [0, 1, 0]);
+            break;
+        case "bronze":
+            glm.mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, -1.0, -15]);
+            glm.mat4.rotate(modelViewMatrix, modelViewMatrix, rotate2scene, [0, 1, 0]);
 
-    glm.mat4.rotateY(modelViewMatrix, modelViewMatrix, controls.rotation_angle_pedestal_2itself)
-    //glm.mat4.translate(modelViewMatrix, modelViewMatrix, [Math.cos(controls.rotation_angle_pedestal_2itself)], 0,  Math.sin(controls.rotation_angle_pedestal_2itself));
+            // Translate the cube to the center of rotation
+            glm.mat4.translate(modelViewMatrix, modelViewMatrix, [5.0, 0.0, 0.0]);
 
-    glm.mat4.rotate(modelViewMatrix, modelViewMatrix, rotationAngle, [0, 1, 0]);
+            // Rotate the cube around its center
+            glm.mat4.rotate(modelViewMatrix, modelViewMatrix, controls.rotation_angle_pedestal_2itself, [0, 1, 0]);
+
+            // Translate the cube back to its original position
+            glm.mat4.translate(modelViewMatrix, modelViewMatrix, [3.0, 0.0, 0.0]);
+            glm.mat4.rotate(modelViewMatrix, modelViewMatrix, rotationAngle, [0, 1, 0]);
+            break;
+    }
 
     gl.uniform4f(fColor, color[0], color[1], color[2], color[3])
     gl.uniformMatrix4fv(prMatrix, false, projectionMatrix)
