@@ -45,6 +45,75 @@ function main() {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     }
 
+
+    const vertices = [
+        // Front face
+        -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0,
+
+        // Back face
+        -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0,
+
+        // Top face
+        -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, -1.0,
+
+        // Bottom face
+        -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, -1.0, -1.0, 1.0,
+
+        // Right face
+        1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0,
+
+        // Left face
+        -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, -1.0,
+    ];
+
+    const vertexNormals = [
+        // Front
+        0.0,  0.0,  1.0,
+        0.0,  0.0,  1.0,
+        0.0,  0.0,  1.0,
+        0.0,  0.0,  1.0,
+
+        // Back
+        0.0,  0.0, -1.0,
+        0.0,  0.0, -1.0,
+        0.0,  0.0, -1.0,
+        0.0,  0.0, -1.0,
+
+        // Top
+        0.0,  1.0,  0.0,
+        0.0,  1.0,  0.0,
+        0.0,  1.0,  0.0,
+        0.0,  1.0,  0.0,
+
+        // Bottom
+        0.0, -1.0,  0.0,
+        0.0, -1.0,  0.0,
+        0.0, -1.0,  0.0,
+        0.0, -1.0,  0.0,
+
+        // Right
+        1.0,  0.0,  0.0,
+        1.0,  0.0,  0.0,
+        1.0,  0.0,  0.0,
+        1.0,  0.0,  0.0,
+
+        // Left
+        -1.0,  0.0,  0.0,
+        -1.0,  0.0,  0.0,
+        -1.0,  0.0,  0.0,
+        -1.0,  0.0,  0.0
+    ];
+
+
+    const normalBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexNormals), gl.STATIC_DRAW);
+
+
+    const cubeVerticesBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, cubeVerticesBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+
     let shaderProgram = initShaderProgram(gl, cubeVS, cubeFS);
 
     gl.useProgram(shaderProgram);
@@ -58,10 +127,10 @@ function main() {
             gl.clearDepth(1.0);
             drawCube(shaderProgram, controls.rotation_angle_gold,
                 [1.0, 0.85, 0.0, 1.0], [2.0, -1.0, -15.0],
-                controls.rotation_angle_pedestal_2itself, controls.rotation_angle_pedestal_2scene, "gold1");
-            drawCube(shaderProgram, controls.rotation_angle_gold, [1.0, 0.85, 0.0, 1.0],[2.0, 1.0, -15.0], controls.rotation_angle_pedestal_2itself, controls.rotation_angle_pedestal_2scene, "gold2");
-            drawCube(shaderProgram, controls.rotation_angle_silver, [0.75, 0.75, 0.75, 1.0],[-1.0, -1.0, -15.0], controls.rotation_angle_pedestal_2itself, controls.rotation_angle_pedestal_2scene, "silver");
-            drawCube(shaderProgram, controls.rotation_angle_bronze, [0.8, 0.5, 0.2, 1.0],[5.0, -1.0, -15.0], controls.rotation_angle_pedestal_2itself, controls.rotation_angle_pedestal_2scene, "bronze");
+                controls.rotation_angle_pedestal_2itself, controls.rotation_angle_pedestal_2scene, "gold1", normalBuffer);
+            drawCube(shaderProgram, controls.rotation_angle_gold, [1.0, 0.85, 0.0, 1.0],[2.0, 1.0, -15.0], controls.rotation_angle_pedestal_2itself, controls.rotation_angle_pedestal_2scene, "gold2", normalBuffer);
+            drawCube(shaderProgram, controls.rotation_angle_silver, [0.75, 0.75, 0.75, 1.0],[-1.0, -1.0, -15.0], controls.rotation_angle_pedestal_2itself, controls.rotation_angle_pedestal_2scene, "silver", normalBuffer);
+            drawCube(shaderProgram, controls.rotation_angle_bronze, [0.8, 0.5, 0.2, 1.0],[5.0, -1.0, -15.0], controls.rotation_angle_pedestal_2itself, controls.rotation_angle_pedestal_2scene, "bronze", normalBuffer);
         }
         requestAnimationFrame(render);
     }
@@ -164,34 +233,7 @@ function checkKeyPressed(e) {
 
 main();
 
-function drawCube(shaderProgram, rotationAngle, color, vec_translate, rotate2itself, rotate2scene, cube_type) {
-//    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-//    gl.clearDepth(1.0);
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
-
-    const vertices = [
-        // Front face
-        -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0,
-
-        // Back face
-        -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0,
-
-        // Top face
-        -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, -1.0,
-
-        // Bottom face
-        -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, -1.0, -1.0, 1.0,
-
-        // Right face
-        1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0,
-
-        // Left face
-        -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, -1.0,
-    ];
-
-    const cubeVerticesBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, cubeVerticesBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+function drawCube(shaderProgram, rotationAngle, color, vec_translate, rotate2itself, rotate2scene, cube_type, normalBuffer) {
 
     const vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
     const prMatrix = gl.getUniformLocation(shaderProgram, "prMatrix");
@@ -201,6 +243,18 @@ function drawCube(shaderProgram, rotationAngle, color, vec_translate, rotate2its
     gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vertexPositionAttribute);
 
+    // gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+    // gl.vertexAttribPointer(
+    //     programInfo.attribLocations.vertexNormal,
+    //     numComponents,
+    //     type,
+    //     normalize,
+    //     stride,
+    //     offset);
+    // gl.enableVertexAttribArray(
+    //     programInfo.attribLocations.vertexNormal);
+
+
     const fieldOfView = (45 * Math.PI) / 180;// in radians
     const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
     const zNear = 0.1;
@@ -208,6 +262,7 @@ function drawCube(shaderProgram, rotationAngle, color, vec_translate, rotate2its
     const projectionMatrix = glm.mat4.create();
 
     glm.mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
+
 
     const modelViewMatrix = glm.mat4.create();
 
