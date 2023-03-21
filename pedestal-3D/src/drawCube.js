@@ -53,6 +53,9 @@ function drawCube(gl, programInfo, buffers, colorBuffer, cube_type, controls) {
             break;
     }
 
+    const normalMatrix = glm.mat4.create();
+    glm.mat4.invert(normalMatrix, modelViewMatrix);
+    glm.mat4.transpose(normalMatrix, normalMatrix);
 
     // Tell WebGL how to pull out the positions from the position
     // buffer into the vertexPosition attribute.
@@ -63,7 +66,7 @@ function drawCube(gl, programInfo, buffers, colorBuffer, cube_type, controls) {
     // Tell WebGL which indices to use to index the vertices
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.indices);
 
-   // setNormalAttribute(gl, buffers, programInfo);
+    setNormalAttribute(gl, buffers, programInfo);
 
     // Tell WebGL to use our program when drawing
     gl.useProgram(programInfo.program);
@@ -74,16 +77,18 @@ function drawCube(gl, programInfo, buffers, colorBuffer, cube_type, controls) {
         false,
         projectionMatrix
     );
+
     gl.uniformMatrix4fv(
         programInfo.uniformLocations.modelViewMatrix,
         false,
         modelViewMatrix
     );
-    // gl.uniformMatrix4fv(
-    //     programInfo.uniformLocations.normalMatrix,
-    //     false,
-    //     normalMatrix
-    // );
+
+    gl.uniformMatrix4fv(
+        programInfo.uniformLocations.normalMatrix,
+        false,
+        normalMatrix
+    );
 
 
     {

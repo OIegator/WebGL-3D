@@ -53,13 +53,14 @@ function main() {
         attribLocations: {
             vertexPosition: gl.getAttribLocation(shaderProgram, "aVertexPosition"),
             vertexNormal: gl.getAttribLocation(shaderProgram, "aVertexNormal"),
+            vertexColor: gl.getAttribLocation(shaderProgram, "aVertexColor"),
         },
         uniformLocations: {
             projectionMatrix: gl.getUniformLocation(
                 shaderProgram,
-                "uProjectionMatrix"
+                "prMatrix"
             ),
-            modelViewMatrix: gl.getUniformLocation(shaderProgram, "uModelViewMatrix"),
+            modelViewMatrix: gl.getUniformLocation(shaderProgram, "mvMatrix"),
             normalMatrix: gl.getUniformLocation(shaderProgram, "uNormalMatrix"),
         },
     };
@@ -75,11 +76,11 @@ function main() {
             gl.clearDepth(1.0);
             let colorBuffer = initColorBuffer(gl, [1.0, 0.85, 0.0, 1.0]);
             drawCube(gl, programInfo, buffers, colorBuffer, "gold1", controls);
-            // drawCube(gl, programInfo, buffers, colorBuffer, "gold2", controls);
-            // colorBuffer = initColorBuffer(gl, [0.75, 0.75, 0.75, 1.0]);
-            // drawCube(gl, programInfo, buffers, colorBuffer, "silver", controls);
-            // colorBuffer = initColorBuffer(gl, [0.8, 0.5, 0.2, 1.0]);
-            // drawCube(gl, programInfo, buffers, colorBuffer, "bronze", controls);
+            drawCube(gl, programInfo, buffers, colorBuffer, "gold2", controls);
+            colorBuffer = initColorBuffer(gl, [0.75, 0.75, 0.75, 1.0]);
+            drawCube(gl, programInfo, buffers, colorBuffer, "silver", controls);
+            colorBuffer = initColorBuffer(gl, [0.8, 0.5, 0.2, 1.0]);
+            drawCube(gl, programInfo, buffers, colorBuffer, "bronze", controls);
         }
         requestAnimationFrame(render);
     }
