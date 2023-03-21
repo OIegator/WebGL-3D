@@ -45,79 +45,6 @@ function main() {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     }
 
-    const vertices = [
-        // Front face
-        -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0,
-
-        // Back face
-        -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0,
-
-        // Top face
-        -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, -1.0,
-
-        // Bottom face
-        -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, -1.0, -1.0, 1.0,
-
-        // Right face
-        1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0,
-
-        // Left face
-        -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, -1.0,
-    ];
-
-    const cubeVerticesBuffer = gl.createBuffer();
-   // gl.bindBuffer(gl.ARRAY_BUFFER, cubeVerticesBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-
-    const vertexNormals = [
-        // Front
-        0.0,  0.0,  1.0,
-        0.0,  0.0,  1.0,
-        0.0,  0.0,  1.0,
-        0.0,  0.0,  1.0,
-
-        // Back
-        0.0,  0.0, -1.0,
-        0.0,  0.0, -1.0,
-        0.0,  0.0, -1.0,
-        0.0,  0.0, -1.0,
-
-        // Top
-        0.0,  1.0,  0.0,
-        0.0,  1.0,  0.0,
-        0.0,  1.0,  0.0,
-        0.0,  1.0,  0.0,
-
-        // Bottom
-        0.0, -1.0,  0.0,
-        0.0, -1.0,  0.0,
-        0.0, -1.0,  0.0,
-        0.0, -1.0,  0.0,
-
-        // Right
-        1.0,  0.0,  0.0,
-        1.0,  0.0,  0.0,
-        1.0,  0.0,  0.0,
-        1.0,  0.0,  0.0,
-
-        // Left
-        -1.0,  0.0,  0.0,
-        -1.0,  0.0,  0.0,
-        -1.0,  0.0,  0.0,
-        -1.0,  0.0,  0.0
-    ];
-
-    const normalBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexNormals),
-        gl.STATIC_DRAW);
-
-
-    const buffers = {
-        vertexBuffer: cubeVerticesBuffer,
-        normalBuffer: normalBuffer,
-    }
-
     let shaderProgram = initShaderProgram(gl, cubeVS, cubeFS);
 
     gl.useProgram(shaderProgram);
@@ -129,12 +56,12 @@ function main() {
         if(shaderProgram) {
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
             gl.clearDepth(1.0);
-            drawCube(shaderProgram, buffers, controls.rotation_angle_gold,
+            drawCube(shaderProgram, controls.rotation_angle_gold,
                 [1.0, 0.85, 0.0, 1.0], [2.0, -1.0, -15.0],
                 controls.rotation_angle_pedestal_2itself, controls.rotation_angle_pedestal_2scene, "gold1");
-            drawCube(shaderProgram, buffers, controls.rotation_angle_gold, [1.0, 0.85, 0.0, 1.0],[2.0, 1.0, -15.0], controls.rotation_angle_pedestal_2itself, controls.rotation_angle_pedestal_2scene, "gold2");
-            drawCube(shaderProgram, buffers, controls.rotation_angle_silver, [0.75, 0.75, 0.75, 1.0],[-1.0, -1.0, -15.0], controls.rotation_angle_pedestal_2itself, controls.rotation_angle_pedestal_2scene, "silver");
-            drawCube(shaderProgram, buffers, controls.rotation_angle_bronze, [0.8, 0.5, 0.2, 1.0],[5.0, -1.0, -15.0], controls.rotation_angle_pedestal_2itself, controls.rotation_angle_pedestal_2scene, "bronze");
+            drawCube(shaderProgram, controls.rotation_angle_gold, [1.0, 0.85, 0.0, 1.0],[2.0, 1.0, -15.0], controls.rotation_angle_pedestal_2itself, controls.rotation_angle_pedestal_2scene, "gold2");
+            drawCube(shaderProgram, controls.rotation_angle_silver, [0.75, 0.75, 0.75, 1.0],[-1.0, -1.0, -15.0], controls.rotation_angle_pedestal_2itself, controls.rotation_angle_pedestal_2scene, "silver");
+            drawCube(shaderProgram, controls.rotation_angle_bronze, [0.8, 0.5, 0.2, 1.0],[5.0, -1.0, -15.0], controls.rotation_angle_pedestal_2itself, controls.rotation_angle_pedestal_2scene, "bronze");
         }
         requestAnimationFrame(render);
     }
@@ -237,10 +164,34 @@ function checkKeyPressed(e) {
 
 main();
 
-function drawCube(shaderProgram, buffers, rotationAngle, color, vec_translate, rotate2itself, rotate2scene, cube_type) {
+function drawCube(shaderProgram, rotationAngle, color, vec_translate, rotate2itself, rotate2scene, cube_type) {
+//    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+//    gl.clearDepth(1.0);
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffers.vertexBuffer);
+    const vertices = [
+        // Front face
+        -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0,
+
+        // Back face
+        -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0,
+
+        // Top face
+        -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, -1.0,
+
+        // Bottom face
+        -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, -1.0, -1.0, 1.0,
+
+        // Right face
+        1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0,
+
+        // Left face
+        -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, -1.0,
+    ];
+
+    const cubeVerticesBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, cubeVerticesBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 
     const vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
     const prMatrix = gl.getUniformLocation(shaderProgram, "prMatrix");
@@ -301,18 +252,6 @@ function drawCube(shaderProgram, buffers, rotationAngle, color, vec_translate, r
             glm.mat4.rotate(modelViewMatrix, modelViewMatrix, rotationAngle, [0, 1, 0]);
             break;
     }
-
-    const vertexNormals = gl.getAttribLocation(shaderProgram, "aVertexNormal");
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffers.normalBuffer);
-    gl.vertexAttribPointer(vertexNormals, 3, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(vertexNormals);
-
-    const normalMatrix = glm.mat4.create();
-    glm.mat4.invert(normalMatrix, modelViewMatrix);
-    glm.mat4.transpose(normalMatrix, normalMatrix);
-
-    const nMatrix = gl.getUniformLocation(shaderProgram, 'uNormalMatrix');
-    gl.uniformMatrix4fv(nMatrix, false, normalMatrix);
 
     gl.uniform4f(fColor, color[0], color[1], color[2], color[3])
     gl.uniformMatrix4fv(prMatrix, false, projectionMatrix)
