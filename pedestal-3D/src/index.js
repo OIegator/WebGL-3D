@@ -1,7 +1,6 @@
 import cubeVS from '../../pedestal-3D/shaders/cubeVS.glsl'
 import cubeFS from '../../pedestal-3D/shaders/cubeFS.glsl'
-import { initBuffers, initColorBuffer } from "./initBuffers";
-import { drawCube } from "./drawCube.js";
+import * as glm from "gl-matrix";
 
 const canvas = document.querySelector('canvas');
 let gl;
@@ -46,25 +45,78 @@ function main() {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     }
 
+
+    const vertices = [
+        // Front face
+        -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0,
+
+        // Back face
+        -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0,
+
+        // Top face
+        -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, -1.0,
+
+        // Bottom face
+        -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, -1.0, -1.0, 1.0,
+
+        // Right face
+        1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0,
+
+        // Left face
+        -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, -1.0,
+    ];
+
+    const vertexNormals = [
+        // Front
+        0.0,  0.0,  1.0,
+        0.0,  0.0,  1.0,
+        0.0,  0.0,  1.0,
+        0.0,  0.0,  1.0,
+
+        // Back
+        0.0,  0.0, -1.0,
+        0.0,  0.0, -1.0,
+        0.0,  0.0, -1.0,
+        0.0,  0.0, -1.0,
+
+        // Top
+        0.0,  1.0,  0.0,
+        0.0,  1.0,  0.0,
+        0.0,  1.0,  0.0,
+        0.0,  1.0,  0.0,
+
+        // Bottom
+        0.0, -1.0,  0.0,
+        0.0, -1.0,  0.0,
+        0.0, -1.0,  0.0,
+        0.0, -1.0,  0.0,
+
+        // Right
+        1.0,  0.0,  0.0,
+        1.0,  0.0,  0.0,
+        1.0,  0.0,  0.0,
+        1.0,  0.0,  0.0,
+
+        // Left
+        -1.0,  0.0,  0.0,
+        -1.0,  0.0,  0.0,
+        -1.0,  0.0,  0.0,
+        -1.0,  0.0,  0.0
+    ];
+
+
+    const normalBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexNormals), gl.STATIC_DRAW);
+
+
+    const cubeVerticesBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, cubeVerticesBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+
     let shaderProgram = initShaderProgram(gl, cubeVS, cubeFS);
 
-    const programInfo = {
-        program: shaderProgram,
-        attribLocations: {
-            vertexPosition: gl.getAttribLocation(shaderProgram, "aVertexPosition"),
-            vertexNormal: gl.getAttribLocation(shaderProgram, "aVertexNormal"),
-        },
-        uniformLocations: {
-            projectionMatrix: gl.getUniformLocation(
-                shaderProgram,
-                "uProjectionMatrix"
-            ),
-            modelViewMatrix: gl.getUniformLocation(shaderProgram, "uModelViewMatrix"),
-            normalMatrix: gl.getUniformLocation(shaderProgram, "uNormalMatrix"),
-        },
-    };
-
-    const buffers = initBuffers(gl);
+    gl.useProgram(shaderProgram);
 
     window.addEventListener("keydown", checkKeyPressed);
 
@@ -73,13 +125,12 @@ function main() {
         if(shaderProgram) {
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
             gl.clearDepth(1.0);
-            let colorBuffer = initColorBuffer(gl, [1.0, 0.85, 0.0, 1.0]);
-            drawCube(gl, programInfo, buffers, colorBuffer, "gold1", controls);
-            // drawCube(gl, programInfo, buffers, colorBuffer, "gold2", controls);
-            // colorBuffer = initColorBuffer(gl, [0.75, 0.75, 0.75, 1.0]);
-            // drawCube(gl, programInfo, buffers, colorBuffer, "silver", controls);
-            // colorBuffer = initColorBuffer(gl, [0.8, 0.5, 0.2, 1.0]);
-            // drawCube(gl, programInfo, buffers, colorBuffer, "bronze", controls);
+            drawCube(shaderProgram, controls.rotation_angle_gold,
+                [1.0, 0.85, 0.0, 1.0], [2.0, -1.0, -15.0],
+                controls.rotation_angle_pedestal_2itself, controls.rotation_angle_pedestal_2scene, "gold1", normalBuffer);
+            drawCube(shaderProgram, controls.rotation_angle_gold, [1.0, 0.85, 0.0, 1.0],[2.0, 1.0, -15.0], controls.rotation_angle_pedestal_2itself, controls.rotation_angle_pedestal_2scene, "gold2", normalBuffer);
+            drawCube(shaderProgram, controls.rotation_angle_silver, [0.75, 0.75, 0.75, 1.0],[-1.0, -1.0, -15.0], controls.rotation_angle_pedestal_2itself, controls.rotation_angle_pedestal_2scene, "silver", normalBuffer);
+            drawCube(shaderProgram, controls.rotation_angle_bronze, [0.8, 0.5, 0.2, 1.0],[5.0, -1.0, -15.0], controls.rotation_angle_pedestal_2itself, controls.rotation_angle_pedestal_2scene, "bronze", normalBuffer);
         }
         requestAnimationFrame(render);
     }
@@ -182,3 +233,85 @@ function checkKeyPressed(e) {
 
 main();
 
+function drawCube(shaderProgram, rotationAngle, color, vec_translate, rotate2itself, rotate2scene, cube_type, normalBuffer) {
+
+    const vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+    const prMatrix = gl.getUniformLocation(shaderProgram, "prMatrix");
+    const mvMatrix = gl.getUniformLocation(shaderProgram, "mvMatrix");
+    const fColor = gl.getUniformLocation(shaderProgram, "fColor");
+
+    gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(vertexPositionAttribute);
+
+    // gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+    // gl.vertexAttribPointer(
+    //     programInfo.attribLocations.vertexNormal,
+    //     numComponents,
+    //     type,
+    //     normalize,
+    //     stride,
+    //     offset);
+    // gl.enableVertexAttribArray(
+    //     programInfo.attribLocations.vertexNormal);
+
+
+    const fieldOfView = (45 * Math.PI) / 180;// in radians
+    const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+    const zNear = 0.1;
+    const zFar = 100.0;
+    const projectionMatrix = glm.mat4.create();
+
+    glm.mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
+
+
+    const modelViewMatrix = glm.mat4.create();
+
+    switch (cube_type) {
+        case "gold1":
+            glm.mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, -1.0, -15]);
+            glm.mat4.rotate(modelViewMatrix, modelViewMatrix, rotate2scene, [0, 1, 0]);
+            glm.mat4.translate(modelViewMatrix, modelViewMatrix, [5.0, 0.0, 0.0]);
+            glm.mat4.rotate(modelViewMatrix, modelViewMatrix, rotationAngle + rotate2itself, [0, 1, 0]);
+            break;
+        case "gold2":
+            glm.mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, 1.0, -15]);
+            glm.mat4.rotate(modelViewMatrix, modelViewMatrix, rotate2scene, [0, 1, 0]);
+            glm.mat4.translate(modelViewMatrix, modelViewMatrix, [5.0, 0.0, 0.0]);
+            glm.mat4.rotate(modelViewMatrix, modelViewMatrix, rotationAngle + rotate2itself, [0, 1, 0]);
+            break;
+        case "silver":
+            glm.mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, -1.0, -15]);
+            glm.mat4.rotate(modelViewMatrix, modelViewMatrix, rotate2scene, [0, 1, 0]);
+            // Translate the cube to the center of rotation
+            glm.mat4.translate(modelViewMatrix, modelViewMatrix, [5.0, 0, 0]);
+
+            // Rotate the cube around its center
+            glm.mat4.rotate(modelViewMatrix, modelViewMatrix, rotate2itself, [0, 1, 0]);
+
+            // Translate the cube back to its original position
+            glm.mat4.translate(modelViewMatrix, modelViewMatrix, [-3.0, 0.0, 0.0]);
+            glm.mat4.rotate(modelViewMatrix, modelViewMatrix, rotationAngle, [0, 1, 0]);
+            break;
+        case "bronze":
+            glm.mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, -1.0, -15]);
+            glm.mat4.rotate(modelViewMatrix, modelViewMatrix, rotate2scene, [0, 1, 0]);
+
+            // Translate the cube to the center of rotation
+            glm.mat4.translate(modelViewMatrix, modelViewMatrix, [5.0, 0.0, 0.0]);
+
+            // Rotate the cube around its center
+            glm.mat4.rotate(modelViewMatrix, modelViewMatrix, controls.rotation_angle_pedestal_2itself, [0, 1, 0]);
+
+            // Translate the cube back to its original position
+            glm.mat4.translate(modelViewMatrix, modelViewMatrix, [3.0, 0.0, 0.0]);
+            glm.mat4.rotate(modelViewMatrix, modelViewMatrix, rotationAngle, [0, 1, 0]);
+            break;
+    }
+
+    gl.uniform4f(fColor, color[0], color[1], color[2], color[3])
+    gl.uniformMatrix4fv(prMatrix, false, projectionMatrix)
+    gl.uniformMatrix4fv(mvMatrix, false, modelViewMatrix)
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 36);
+
+    requestAnimationFrame(drawCube);
+}
