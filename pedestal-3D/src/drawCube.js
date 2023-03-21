@@ -54,10 +54,6 @@ function drawCube(gl, programInfo, buffers, colorBuffer, cube_type, controls) {
     }
 
 
-    // const normalMatrix = glm.mat4.create();
-    // glm.mat4.invert(normalMatrix, modelViewMatrix);
-    // glm.mat4.transpose(normalMatrix, normalMatrix);
-
     // Tell WebGL how to pull out the positions from the position
     // buffer into the vertexPosition attribute.
     setPositionAttribute(gl, buffers, programInfo);

@@ -3,9 +3,10 @@
 precision highp float;
 #endif
 
+in highp vec3 vLighting;
 uniform vec4 fColor;
 out vec4 fragColor;
 
 void main(void) {
-    fragColor = fColor;
+    fragColor = vec4(fColor.rgb * vLighting, 1.0);
 }
