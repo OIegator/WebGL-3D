@@ -14,7 +14,7 @@ void main() {
     gl_Position = prMatrix * mvMatrix * vec4(aVertexPosition, 1.0);
     vPosition = aVertexPosition;
     vColor = aVertexColor;
-    
+
     highp vec3 ambientLight = vec3(0.3, 0.3, 0.3);
     highp vec3 directionalLightColor = vec3(1, 1, 1);
     highp vec3 directionalVector = normalize(vec3(0.85, 0.8, 0.75));

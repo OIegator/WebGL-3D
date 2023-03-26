@@ -90,6 +90,24 @@ function drawCube(gl, programInfo, buffers, colorBuffer, cube_type, controls) {
         normalMatrix
     );
 
+    gl.uniform1f(
+        programInfo.uniformLocations.attenuationLinear,
+        controls.attenuation_linear);
+
+    gl.uniform1f(
+        programInfo.uniformLocations.attenuationQuadratic,
+        controls.attenuation_quadratic);
+
+    gl.uniform1f(
+        programInfo.uniformLocations.backgroundPower,
+        controls.ambient_intensity);
+
+    const lightPositionValue = [0, 0, 2];
+
+    gl.uniform3fv(
+        programInfo.uniformLocations.lightPosition,
+        lightPositionValue
+    );
 
     {
         const vertexCount = 36;

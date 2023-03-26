@@ -1,5 +1,8 @@
 import cubeVS from '../../pedestal-3D/shaders/cubeVS.glsl'
 import cubeFS from '../../pedestal-3D/shaders/cubeFS.glsl'
+import sourceVS from '../../pedestal-3D/shaders/sourceVS.glsl'
+import sourceGoureauFS from '../../pedestal-3D/shaders/sourceGoureauFS.glsl'
+import sourceFongFS from '../../pedestal-3D/shaders/sourceFongFS.glsl'
 import { initBuffers, initColorBuffer } from "./initBuffers";
 import { drawCube } from "./drawCube.js";
 
@@ -14,6 +17,9 @@ let controls = {
     rotation_angle_bronze: 0.0,
     rotation_angle_pedestal_2itself: 0.0,
     rotation_angle_pedestal_2scene: 0.0,
+    attenuation_linear: 0.0,
+    attenuation_quadratic: 0.0,
+    ambient_intensity: 0.0,
 }
 
 function initWebGL(canvas) {
@@ -46,22 +52,33 @@ function main() {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     }
 
-    let shaderProgram = initShaderProgram(gl, cubeVS, cubeFS);
+    let shaderProgram = initShaderProgram(gl, sourceVS, sourceFongFS);
 
     const programInfo = {
         program: shaderProgram,
         attribLocations: {
-            vertexPosition: gl.getAttribLocation(shaderProgram, "aVertexPosition"),
-            vertexNormal: gl.getAttribLocation(shaderProgram, "aVertexNormal"),
-            vertexColor: gl.getAttribLocation(shaderProgram, "aVertexColor"),
+            vertexPosition:
+                gl.getAttribLocation(shaderProgram, "aVertexPosition"),
+            vertexNormal:
+                gl.getAttribLocation(shaderProgram, "aVertexNormal"),
+            vertexColor:
+                gl.getAttribLocation(shaderProgram, "aVertexColor"),
         },
         uniformLocations: {
-            projectionMatrix: gl.getUniformLocation(
-                shaderProgram,
-                "prMatrix"
-            ),
-            modelViewMatrix: gl.getUniformLocation(shaderProgram, "mvMatrix"),
-            normalMatrix: gl.getUniformLocation(shaderProgram, "uNormalMatrix"),
+            projectionMatrix:
+                gl.getUniformLocation(shaderProgram, "uProjectionMatrix"),
+            modelViewMatrix:
+                gl.getUniformLocation(shaderProgram, "uModelViewMatrix"),
+            normalMatrix:
+                gl.getUniformLocation(shaderProgram, "uNormalMatrix"),
+            lightPosition:
+                gl.getUniformLocation(shaderProgram, "uLightPosition"),
+            attenuationLinear:
+                gl.getUniformLocation(shaderProgram, "uAttenuationLinear"),
+            attenuationQuadratic:
+                gl.getUniformLocation(shaderProgram, "uAttenuationQuadratic"),
+            ambientIntensity:
+                gl.getUniformLocation(shaderProgram, "uAmbientIntensity"),
         },
     };
 
