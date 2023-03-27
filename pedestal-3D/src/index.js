@@ -1,6 +1,6 @@
 import cubeVS from '../../pedestal-3D/shaders/cubeVS.glsl'
 import cubeFS from '../../pedestal-3D/shaders/cubeFS.glsl'
-import sourceVS from '../../pedestal-3D/shaders/sourceVS.glsl'
+import sourcePhongVS from '../shaders/sourcePhongVS.glsl'
 import sourceGoureauFS from '../../pedestal-3D/shaders/sourceGoureauFS.glsl'
 import sourceFongFS from '../../pedestal-3D/shaders/sourceFongFS.glsl'
 import { initBuffers, initColorBuffer } from "./initBuffers";
@@ -52,7 +52,7 @@ function main() {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     }
 
-    let shaderProgram = initShaderProgram(gl, sourceVS, sourceFongFS);
+    let shaderProgram = initShaderProgram(gl, sourcePhongVS, sourceGoureauFS);
 
     const programInfo = {
         program: shaderProgram,
@@ -73,6 +73,12 @@ function main() {
                 gl.getUniformLocation(shaderProgram, "uNormalMatrix"),
             lightPosition:
                 gl.getUniformLocation(shaderProgram, "uLightPosition"),
+            ambientLightColor:
+                gl.getUniformLocation(shaderProgram, "uAmbientLightColor"),
+            diffuseLightColor:
+                gl.getUniformLocation(shaderProgram, "uDiffuseLightColor"),
+            specularLightColor:
+                gl.getUniformLocation(shaderProgram, "uSpecularLightColor"),
             attenuationLinear:
                 gl.getUniformLocation(shaderProgram, "uAttenuationLinear"),
             attenuationQuadratic:

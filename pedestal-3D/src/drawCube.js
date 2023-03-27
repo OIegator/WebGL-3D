@@ -99,7 +99,7 @@ function drawCube(gl, programInfo, buffers, colorBuffer, cube_type, controls) {
         controls.attenuation_quadratic);
 
     gl.uniform1f(
-        programInfo.uniformLocations.backgroundPower,
+        programInfo.uniformLocations.ambientIntensity,
         controls.ambient_intensity);
 
     const lightPositionValue = [0, 0, 2];
@@ -109,6 +109,20 @@ function drawCube(gl, programInfo, buffers, colorBuffer, cube_type, controls) {
         lightPositionValue
     );
 
+    gl.uniform3fv(
+        programInfo.uniformLocations.ambientLightColor,
+        [0, 0, 0]
+    );
+
+    gl.uniform3fv(
+        programInfo.uniformLocations.diffuseLightColor,
+        [1, 1, 1]
+    );
+
+    gl.uniform3fv(
+        programInfo.uniformLocations.specularLightColor,
+        [1, 1, 1]
+    );
     {
         const vertexCount = 36;
         const type = gl.UNSIGNED_SHORT;
