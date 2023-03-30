@@ -18,6 +18,7 @@ uniform float uAttenuationQuadratic;
 
 out vec4 vColor;
 out vec3 vPosition;
+out vec3 vNormal;
 
 out highp vec3 vLightWeighting;
 
@@ -30,6 +31,8 @@ void main() {
 
     vec3 lightDirection = normalize(uLightPosition - vertexPositionEye3);
 
+    vec3 halfway = normalize(lightDirection - normalize(vertexPositionEye3));
+
     vec3 normal = normalize(mat3(uNormalMatrix) * aVertexNormal);
 
     float diffuseLightDot = max(dot(normal, lightDirection), 0.0);
@@ -38,17 +41,18 @@ void main() {
 
     vec3 viewVectorEye = -normalize(vertexPositionEye3);
 
-    float specularLightDot = max(dot(reflectionVector, viewVectorEye), 0.0);
+    float specularLightDot = max(dot(normal, halfway), 0.0);
     float specularLightParam = pow(specularLightDot, shininess);
 
     float attenuation = 1.0 / (1.0 + uAttenuationLinear * length(lightDirection) +
-                    uAttenuationQuadratic * length(lightDirection) * length(lightDirection));
+    uAttenuationQuadratic * length(lightDirection) * length(lightDirection));
 
     vLightWeighting = uAmbientLightColor * uAmbientIntensity +
-                      uDiffuseLightColor * diffuseLightDot +
-                      uSpecularLightColor * specularLightParam;
+    uDiffuseLightColor * diffuseLightDot +
+    uSpecularLightColor * specularLightParam;
 
     gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aVertexPosition, 1.0);
-    vPosition = aVertexPosition;
+    vPosition = vertexPositionEye3;
     vColor = aVertexColor;
+    vNormal = normal;
 }

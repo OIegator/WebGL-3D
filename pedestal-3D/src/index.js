@@ -1,12 +1,17 @@
 import cubeVS from '../../pedestal-3D/shaders/cubeVS.glsl'
 import cubeFS from '../../pedestal-3D/shaders/cubeFS.glsl'
-import sourcePhongVS from '../shaders/sourcePhongVS.glsl'
-import sourceGoureauFS from '../../pedestal-3D/shaders/sourceGoureauFS.glsl'
-import sourceFongFS from '../../pedestal-3D/shaders/sourceFongFS.glsl'
-import { initBuffers, initColorBuffer } from "./initBuffers";
-import { drawCube } from "./drawCube.js";
+import PhongVS from '../shaders/PhongVS.glsl'
+import BlinnPhongVS from '../shaders/BlinnPhongVS.glsl'
+import LambertVS from '../shaders/LambertVS.glsl'
+import GoureauFS from '../shaders/GoureauFS.glsl'
+import PhongFS from '../shaders/PhongFS.glsl'
+import {initBuffers, initColorBuffer} from "./initBuffers";
+import {drawCube} from "./drawCube.js";
+
 
 const canvas = document.querySelector('canvas');
+const textLight = document.getElementById('light-overlay');
+const textShade = document.getElementById('shade-overlay');
 let gl;
 
 let controls = {
@@ -20,6 +25,12 @@ let controls = {
     attenuation_linear: 0.0,
     attenuation_quadratic: 0.0,
     ambient_intensity: 0.0,
+    current_vs: LambertVS,
+    current_fs: GoureauFS,
+    fs_list: [GoureauFS, PhongFS],
+    fs_ind: 0,
+    vs_list: [LambertVS, PhongVS, BlinnPhongVS],
+    vs_ind: 0,
 }
 
 function initWebGL(canvas) {
@@ -28,7 +39,8 @@ function initWebGL(canvas) {
     for (let ii = 0; ii < names.length; ++ii) {
         try {
             gl = canvas.getContext(names[ii]);
-        } catch(e) {}
+        } catch (e) {
+        }
         if (gl) {
             break;
         }
@@ -52,41 +64,6 @@ function main() {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     }
 
-    let shaderProgram = initShaderProgram(gl, sourcePhongVS, sourceGoureauFS);
-
-    const programInfo = {
-        program: shaderProgram,
-        attribLocations: {
-            vertexPosition:
-                gl.getAttribLocation(shaderProgram, "aVertexPosition"),
-            vertexNormal:
-                gl.getAttribLocation(shaderProgram, "aVertexNormal"),
-            vertexColor:
-                gl.getAttribLocation(shaderProgram, "aVertexColor"),
-        },
-        uniformLocations: {
-            projectionMatrix:
-                gl.getUniformLocation(shaderProgram, "uProjectionMatrix"),
-            modelViewMatrix:
-                gl.getUniformLocation(shaderProgram, "uModelViewMatrix"),
-            normalMatrix:
-                gl.getUniformLocation(shaderProgram, "uNormalMatrix"),
-            lightPosition:
-                gl.getUniformLocation(shaderProgram, "uLightPosition"),
-            ambientLightColor:
-                gl.getUniformLocation(shaderProgram, "uAmbientLightColor"),
-            diffuseLightColor:
-                gl.getUniformLocation(shaderProgram, "uDiffuseLightColor"),
-            specularLightColor:
-                gl.getUniformLocation(shaderProgram, "uSpecularLightColor"),
-            attenuationLinear:
-                gl.getUniformLocation(shaderProgram, "uAttenuationLinear"),
-            attenuationQuadratic:
-                gl.getUniformLocation(shaderProgram, "uAttenuationQuadratic"),
-            ambientIntensity:
-                gl.getUniformLocation(shaderProgram, "uAmbientIntensity"),
-        },
-    };
 
     const buffers = initBuffers(gl);
 
@@ -94,7 +71,44 @@ function main() {
 
     function render() {
 
-        if(shaderProgram) {
+        let shaderProgram = initShaderProgram(gl, controls.current_vs, controls.current_fs);
+
+        const programInfo = {
+            program: shaderProgram,
+            attribLocations: {
+                vertexPosition:
+                    gl.getAttribLocation(shaderProgram, "aVertexPosition"),
+                vertexNormal:
+                    gl.getAttribLocation(shaderProgram, "aVertexNormal"),
+                vertexColor:
+                    gl.getAttribLocation(shaderProgram, "aVertexColor"),
+            },
+            uniformLocations: {
+                projectionMatrix:
+                    gl.getUniformLocation(shaderProgram, "uProjectionMatrix"),
+                modelViewMatrix:
+                    gl.getUniformLocation(shaderProgram, "uModelViewMatrix"),
+                normalMatrix:
+                    gl.getUniformLocation(shaderProgram, "uNormalMatrix"),
+                lightPosition:
+                    gl.getUniformLocation(shaderProgram, "uLightPosition"),
+                ambientLightColor:
+                    gl.getUniformLocation(shaderProgram, "uAmbientLightColor"),
+                diffuseLightColor:
+                    gl.getUniformLocation(shaderProgram, "uDiffuseLightColor"),
+                specularLightColor:
+                    gl.getUniformLocation(shaderProgram, "uSpecularLightColor"),
+                attenuationLinear:
+                    gl.getUniformLocation(shaderProgram, "uAttenuationLinear"),
+                attenuationQuadratic:
+                    gl.getUniformLocation(shaderProgram, "uAttenuationQuadratic"),
+                ambientIntensity:
+                    gl.getUniformLocation(shaderProgram, "uAmbientIntensity"),
+            },
+        };
+
+
+        if (shaderProgram) {
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
             gl.clearDepth(1.0);
             let colorBuffer = initColorBuffer(gl, [1.0, 0.85, 0.0, 1.0]);
@@ -107,6 +121,7 @@ function main() {
         }
         requestAnimationFrame(render);
     }
+
     requestAnimationFrame(render);
 }
 
@@ -126,6 +141,7 @@ function initShaderProgram(gl, vsSource, fsSource) {
     return shaderProgram;
 
 }
+
 function loadShader(gl, type, source) {
     const shader = gl.createShader(type);
     gl.shaderSource(shader, source);
@@ -137,6 +153,21 @@ function loadShader(gl, type, source) {
         return null;
     }
     return shader;
+}
+
+function shader2string(shader) {
+    switch (shader) {
+        case PhongVS:
+            return "Phong"
+        case LambertVS:
+            return "Lambert"
+        case BlinnPhongVS:
+            return "Blinn-Phong"
+        case PhongFS:
+            return "Phong"
+        case GoureauFS:
+            return "Goureau"
+    }
 }
 
 function checkKeyPressed(e) {
@@ -161,6 +192,15 @@ function checkKeyPressed(e) {
         controls.current_rotator = "center";
     }
 
+    if (e.keyCode == "70") {
+        controls.current_fs = controls.fs_list[++controls.fs_ind % controls.fs_list.length];
+        textShade.innerText = "Shading Model: " + shader2string(controls.fs_list[controls.fs_ind % controls.fs_list.length]);
+    }
+
+    if (e.keyCode == "86") {
+        controls.current_vs = controls.vs_list[++controls.vs_ind % controls.vs_list.length];
+        textLight.innerText = "Light Model: " + shader2string(controls.vs_list[controls.vs_ind % controls.vs_list.length]);
+    }
 
     if (e.keyCode == "37") {
         switch (controls.current_rotator) {

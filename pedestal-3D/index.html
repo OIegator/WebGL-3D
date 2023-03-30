@@ -4,9 +4,37 @@
   <title>Static figures</title>
   <meta charset="UTF-8" />
   <script src="../pedestal-3D/src/index.js" defer type="module"></script>
+  <style>
+    #light-overlay {
+      position: absolute;
+      top: 400px;
+      left: 160px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: white;
+      text-shadow: 1px 1px 1px black;
+      z-index: 1;
+    }
+
+    #shade-overlay {
+      position: absolute;
+      top: 400px;
+      left: 450px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: white;
+      text-shadow: 1px 1px 1px black;
+      z-index: 1;
+    }
+  </style>
 </head>
 
 <body>
-<canvas width="780" height="480"></canvas>
+<canvas width="780" height="480">
+
+</canvas>
+<div id="light-overlay">Light Model: Lambert</div>
+<div id="shade-overlay">Shading Model: Goureau</div>
+
 </body>
 </html>
