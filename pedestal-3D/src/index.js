@@ -1,8 +1,7 @@
-import cubeVS from '../../pedestal-3D/shaders/cubeVS.glsl'
-import cubeFS from '../../pedestal-3D/shaders/cubeFS.glsl'
 import sourcePhongVS from '../shaders/sourcePhongVS.glsl'
+import sourceLambertVS from '../shaders/sourceLambertVS.glsl'
 import sourceGoureauFS from '../../pedestal-3D/shaders/sourceGoureauFS.glsl'
-import sourceFongFS from '../../pedestal-3D/shaders/sourceFongFS.glsl'
+import sourcePhongFS from '../../pedestal-3D/shaders/sourcePhongFS.glsl'
 import { initBuffers, initColorBuffer } from "./initBuffers";
 import { drawCube } from "./drawCube.js";
 
@@ -12,6 +11,7 @@ let gl;
 let controls = {
     pedestal_center: [],
     current_rotator: "gold",
+    current_controller: "lin",
     rotation_angle_gold: 0.0,
     rotation_angle_silver: 0.0,
     rotation_angle_bronze: 0.0,
@@ -52,7 +52,7 @@ function main() {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     }
 
-    let shaderProgram = initShaderProgram(gl, sourcePhongVS, sourceGoureauFS);
+    let shaderProgram = initShaderProgram(gl, sourceLambertVS, sourcePhongFS);
 
     const programInfo = {
         program: shaderProgram,
@@ -161,6 +161,18 @@ function checkKeyPressed(e) {
         controls.current_rotator = "center";
     }
 
+    if (e.keyCode == "49") {
+        controls.current_controller = "lin";
+    }
+
+    if (e.keyCode == "50") {
+        controls.current_controller = "quad";
+    }
+
+    if (e.keyCode == "51") {
+        controls.current_controller = "ambient";
+    }
+
 
     if (e.keyCode == "37") {
         switch (controls.current_rotator) {
@@ -198,6 +210,34 @@ function checkKeyPressed(e) {
                 break;
             case "center":
                 controls.rotation_angle_pedestal_2scene += 0.1;
+                break;
+        }
+    }
+
+    if (e.keyCode == "38") {
+        switch (controls.current_controller) {
+            case "lin":
+                controls.attenuation_linear -= 0.1;
+                break;
+            case "quad":
+                controls.attenuation_quadratic -= 0.1;
+                break;
+            case "ambient":
+                controls.ambient_intensity += 0.1;
+                break;
+        }
+    }
+
+    if (e.keyCode == "40") {
+        switch (controls.current_controller) {
+            case "lin":
+                controls.attenuation_linear += 0.1;
+                break;
+            case "quad":
+                controls.attenuation_quadratic += 0.1;
+                break;
+            case "ambient":
+                controls.ambient_intensity -= 0.1;
                 break;
         }
     }
