@@ -175,57 +175,58 @@ function shader2string(shader) {
 
 function checkKeyPressed(e) {
 
-    if (e.keyCode == "66") {
+
+    if (e.key === "b") {
         controls.current_rotator = "bronze";
         horizontalCtrl.innerText = "Rotation Controller: Bronze pedestal"
     }
 
-    if (e.keyCode == "71") {
+    if (e.key === "g") {
         controls.current_rotator = "gold";
         horizontalCtrl.innerText = "Rotation Controller: Gold pedestal"
     }
 
-    if (e.keyCode == "83") {
+    if (e.key === "s") {
         controls.current_rotator = "silver";
         horizontalCtrl.innerText = "Rotation Controller: Silver pedestal"
     }
 
-    if (e.keyCode == "80") {
+    if (e.key === "p") {
         controls.current_rotator = "pedestal";
         horizontalCtrl.innerText = "Rotation Controller: All pedestals"
     }
 
-    if (e.keyCode == "67") {
+    if (e.key === "c") {
         controls.current_rotator = "center";
         horizontalCtrl.innerText = "Rotation Controller: Around center"
     }
 
-    if (e.keyCode == "70") {
+    if (e.key === "f") {
         controls.current_fs = controls.fs_list[++controls.fs_ind % controls.fs_list.length];
         textShade.innerText = "Shading Model: " + shader2string(controls.fs_list[controls.fs_ind % controls.fs_list.length]);
     }
 
-    if (e.keyCode == "86") {
+    if (e.key === "v") {
         controls.current_vs = controls.vs_list[++controls.vs_ind % controls.vs_list.length];
         textLight.innerText = "Light Model: " + shader2string(controls.vs_list[controls.vs_ind % controls.vs_list.length]);
     }
-    if (e.keyCode == "49") {
+    if (e.key === "1") {
         controls.current_controller = "lin";
         verticalCtrl.innerText = "Adjustment Controller: Linear attenuation"
     }
 
-    if (e.keyCode == "50") {
+    if (e.key === "2") {
         controls.current_controller = "quad";
         verticalCtrl.innerText = "Adjustment Controller: Quadratic attenuation"
     }
 
-    if (e.keyCode == "51") {
+    if (e.key === "3") {
         controls.current_controller = "ambient";
         verticalCtrl.innerText = "Adjustment Controller: Ambient light"
     }
 
 
-    if (e.keyCode == "37") {
+    if (e.key === "ArrowLeft") {
         switch (controls.current_rotator) {
             case "gold":
                 controls.rotation_angle_gold -= 0.1;
@@ -245,7 +246,7 @@ function checkKeyPressed(e) {
         }
     }
 
-    if (e.keyCode == "39") {
+    if (e.key === "ArrowRight") {
         switch (controls.current_rotator) {
             case "gold":
                 controls.rotation_angle_gold += 0.1;
@@ -265,7 +266,7 @@ function checkKeyPressed(e) {
         }
     }
 
-    if (e.keyCode == "38") {
+    if (e.key === "ArrowDown") {
         switch (controls.current_controller) {
             case "lin":
                 controls.attenuation_linear -= 0.1;
@@ -279,7 +280,7 @@ function checkKeyPressed(e) {
         }
     }
 
-    if (e.keyCode == "40") {
+    if (e.key === "ArrowUp") {
         switch (controls.current_controller) {
             case "lin":
                 controls.attenuation_linear += 0.1;
