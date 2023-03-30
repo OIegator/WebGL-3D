@@ -19,6 +19,7 @@ uniform float uAttenuationQuadratic;
 out vec4 vColor;
 out vec3 vPosition;
 out vec3 vNormal;
+out vec3 vCameraPosition;
 
 out highp vec3 vLightWeighting;
 
@@ -48,4 +49,5 @@ void main() {
     vPosition = vertexPositionEye3;
     vColor = aVertexColor;
     vNormal = normal;
+    vCameraPosition = viewVectorEye;
 }

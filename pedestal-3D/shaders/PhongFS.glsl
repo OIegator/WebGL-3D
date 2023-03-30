@@ -35,8 +35,8 @@ void main() {
     uAttenuationQuadratic * length(lightDirection) * length(lightDirection));
 
     vec3 vLightWeighting = uAmbientLightColor * uAmbientIntensity +
-    uDiffuseLightColor * diffuseLightDot +
-    uSpecularLightColor * specularLightParam;
+    (uDiffuseLightColor * diffuseLightDot +
+    uSpecularLightColor * specularLightParam) * attenuation;;
 
     fragColor = vec4(vLightWeighting.rgb * vColor.rgb, vColor.a);
 

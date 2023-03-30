@@ -1,4 +1,5 @@
 import * as glm from "gl-matrix";
+
 function drawCube(gl, programInfo, buffers, colorBuffer, cube_type, controls) {
 
     const fieldOfView = (45 * Math.PI) / 180; // in radians
@@ -192,4 +193,4 @@ function setNormalAttribute(gl, buffers, programInfo) {
     gl.enableVertexAttribArray(programInfo.attribLocations.vertexNormal);
 }
 
-export { drawCube };
+export {drawCube};

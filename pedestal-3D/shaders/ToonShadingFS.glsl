@@ -7,6 +7,7 @@ in highp vec3 vLightDir;
 in vec3 vNormal;
 in vec4 vColor;
 in vec3 vPosition;
+in vec3 vCameraPosition;
 uniform vec3 uLightPosition;
 uniform float uAttenuationLinear;
 uniform float uAttenuationQuadratic;
@@ -17,29 +18,50 @@ uniform vec3 uSpecularLightColor;
 out vec4 fragColor;
 
 const float shininess = 32.0;
+const float edge0 = 0.1;
+const float edge1 = 0.3;
 
 void main() {
 
     vec3 lightDirection = normalize(uLightPosition - vPosition);
 
+    float intensity = dot(vNormal, lightDirection);
+
     float diffuseLightDot = max(dot(vNormal, lightDirection), 0.0);
-
-    vec3 reflectionVector = normalize(reflect(-lightDirection, vNormal));
-
-    vec3 viewVectorEye = -normalize(vPosition);
-
-    float specularLightDot = max(dot(reflectionVector, viewVectorEye), 0.0);
-    float specularLightParam = pow(specularLightDot, shininess);
 
     float attenuation = 1.0 / (1.0 + uAttenuationLinear * length(lightDirection) +
     uAttenuationQuadratic * length(lightDirection) * length(lightDirection));
 
-    vec3 vLightWeighting = uAmbientLightColor * uAmbientIntensity +
-    uDiffuseLightColor * diffuseLightDot +
-    uSpecularLightColor * specularLightParam;
+    vec3 diffuse = uDiffuseLightColor * diffuseLightDot;
 
-    fragColor = vec4(vLightWeighting.rgb * vColor.rgb, vColor.a);
-
+    vec3 specular = vec3(0.0);
+    vec3 vLightWeighting = vec3(0.0);
+    if (intensity > 0.95) {
+        specular = uSpecularLightColor * pow(max(dot(normalize(reflect(-normalize(uLightPosition - vPosition), normalize(vNormal))), normalize(-vPosition)), 0.0), shininess);
+        vLightWeighting = uAmbientLightColor * uAmbientIntensity +
+        (specular) * attenuation;
+        fragColor = vec4(vLightWeighting.rgb * vColor.rgb, vColor.a);
+    } else if (intensity > 0.5) {
+        vLightWeighting = uAmbientLightColor * uAmbientIntensity +
+        (specular + diffuse) * attenuation;
+        fragColor = vec4(vLightWeighting.rgb * vColor.rgb, vColor.a);
+    } else {
+        vLightWeighting = uAmbientLightColor * uAmbientIntensity +
+        (diffuse) * attenuation;
+        fragColor = vec4(vLightWeighting.rgb * vColor.rgb, vColor.a);
+    }
+    // Add cell shading
+    if (fragColor.r > 0.8) {
+        fragColor.rgb = vLightWeighting * vColor.rgb * vec3(1.0);
+    } else if (fragColor.r > 0.6) {
+        fragColor.rgb = vLightWeighting * vColor.rgb * 0.8;
+    } else if (fragColor.r > 0.4) {
+        fragColor.rgb = vLightWeighting * vColor.rgb * 0.6;
+    } else if (fragColor.r > 0.2) {
+        fragColor.rgb = vLightWeighting * vColor.rgb * 0.4;
+    } else {
+        fragColor.rgb = vLightWeighting * vColor.rgb * 0.2;
+    }
 }
 
 

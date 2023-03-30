@@ -2,6 +2,7 @@ import PhongVS from '../shaders/PhongVS.glsl'
 import BlinnPhongVS from '../shaders/BlinnPhongVS.glsl'
 import LambertVS from '../shaders/LambertVS.glsl'
 import GoureauFS from '../shaders/GoureauFS.glsl'
+import ToonShadingFS from '../shaders/ToonShadingFS.glsl'
 import PhongFS from '../shaders/PhongFS.glsl'
 import {initBuffers, initColorBuffer} from "./initBuffers";
 import {drawCube} from "./drawCube.js";
@@ -9,6 +10,8 @@ import {drawCube} from "./drawCube.js";
 const canvas = document.querySelector('canvas');
 const textLight = document.getElementById('light-overlay');
 const textShade = document.getElementById('shade-overlay');
+const verticalCtrl = document.getElementById('vertical-controller-overlay');
+const horizontalCtrl = document.getElementById('horizontal-controller-overlay');
 let gl;
 
 let controls = {
@@ -25,7 +28,7 @@ let controls = {
     ambient_intensity: 0.0,
     current_vs: LambertVS,
     current_fs: GoureauFS,
-    fs_list: [GoureauFS, PhongFS],
+    fs_list: [GoureauFS, PhongFS, ToonShadingFS],
     fs_ind: 0,
     vs_list: [LambertVS, PhongVS, BlinnPhongVS],
     vs_ind: 0,
@@ -165,6 +168,8 @@ function shader2string(shader) {
             return "Phong"
         case GoureauFS:
             return "Goureau"
+        case ToonShadingFS:
+            return "Toon Shading"
     }
 }
 
@@ -172,22 +177,27 @@ function checkKeyPressed(e) {
 
     if (e.keyCode == "66") {
         controls.current_rotator = "bronze";
+        horizontalCtrl.innerText = "Rotation Controller: Bronze pedestal"
     }
 
     if (e.keyCode == "71") {
         controls.current_rotator = "gold";
+        horizontalCtrl.innerText = "Rotation Controller: Gold pedestal"
     }
 
     if (e.keyCode == "83") {
         controls.current_rotator = "silver";
+        horizontalCtrl.innerText = "Rotation Controller: Silver pedestal"
     }
 
     if (e.keyCode == "80") {
         controls.current_rotator = "pedestal";
+        horizontalCtrl.innerText = "Rotation Controller: All pedestals"
     }
 
     if (e.keyCode == "67") {
         controls.current_rotator = "center";
+        horizontalCtrl.innerText = "Rotation Controller: Around center"
     }
 
     if (e.keyCode == "70") {
@@ -201,14 +211,17 @@ function checkKeyPressed(e) {
     }
     if (e.keyCode == "49") {
         controls.current_controller = "lin";
+        verticalCtrl.innerText = "Adjustment Controller: Linear attenuation"
     }
 
     if (e.keyCode == "50") {
         controls.current_controller = "quad";
+        verticalCtrl.innerText = "Adjustment Controller: Quadratic attenuation"
     }
 
     if (e.keyCode == "51") {
         controls.current_controller = "ambient";
+        verticalCtrl.innerText = "Adjustment Controller: Ambient light"
     }
 
 

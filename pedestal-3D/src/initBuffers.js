@@ -161,4 +161,4 @@ function initNormalBuffer(gl) {
     return normalBuffer;
 }
 
-export { initBuffers };
+export {initBuffers};

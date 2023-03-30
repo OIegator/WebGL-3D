@@ -19,6 +19,7 @@ uniform float uAttenuationQuadratic;
 out vec4 vColor;
 out vec3 vPosition;
 out vec3 vNormal;
+out vec3 vCameraPosition;
 
 out highp vec3 vLightWeighting;
 
@@ -48,11 +49,12 @@ void main() {
     uAttenuationQuadratic * length(lightDirection) * length(lightDirection));
 
     vLightWeighting = uAmbientLightColor * uAmbientIntensity +
-    uDiffuseLightColor * diffuseLightDot +
-    uSpecularLightColor * specularLightParam;
+    (uDiffuseLightColor * diffuseLightDot +
+    uSpecularLightColor * specularLightParam) * attenuation;
 
     gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aVertexPosition, 1.0);
     vPosition = vertexPositionEye3;
     vColor = aVertexColor;
     vNormal = normal;
+    vCameraPosition = viewVectorEye;
 }
