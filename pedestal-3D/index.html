@@ -26,15 +26,56 @@
       text-shadow: 1px 1px 1px black;
       z-index: 1;
     }
+
+    body {
+      font-family: Arial, sans-serif;
+    }
   </style>
+
 </head>
 
 <body>
-<canvas width="780" height="480">
+<canvas width="780" height="480"></canvas>
 
-</canvas>
 <div id="light-overlay">Light Model: Lambert</div>
 <div id="shade-overlay">Shading Model: Goureau</div>
+
+<div>
+  <div style="display: inline-block;">
+    <h3>Rotation</h3>
+    <ul>
+      <li>Rotate right: &#x2192;</li>
+      <li>Rotate left: &#x2190;</li>
+    </ul>
+  </div>
+  <div style="display: inline-block;">
+    <h3>Rotation mode</h3>
+    <ul>
+      <li>Rotate gold pedestal: G</li>
+      <li>Rotate silver pedestal: S</li>
+      <li>Rotate bronze pedestal: B</li>
+      <li>Rotate pedestal around its axis: P</li>
+      <li>Rotate pedestal around scene axis: C</li>
+    </ul>
+  </div>
+</div>
+<div>
+  <div style="display: inline-block;">
+    <h3>Lighting control</h3>
+    <ul>
+      <li>Increase brightness: &#x2191;</li>
+      <li>Decrease brightness: &#x2193;</li>
+    </ul>
+  </div>
+  <div style="display: inline-block;">
+    <h3>Lighting parameters</h3>
+    <ul>
+      <li>Linear attenuation: 1</li>
+      <li>Quadratic attenuation: 2</li>
+      <li>Background light power: 3</li>
+    </ul>
+  </div>
+</div>
 
 </body>
 </html>
