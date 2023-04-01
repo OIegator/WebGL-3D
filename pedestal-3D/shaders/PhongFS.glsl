@@ -7,6 +7,9 @@ in highp vec3 vLightDir;
 in vec3 vNormal;
 in vec4 vColor;
 in vec3 vPosition;
+in highp vec2 vTextureCoord;
+
+uniform sampler2D uSampler;
 uniform vec3 uLightPosition;
 uniform float uAttenuationLinear;
 uniform float uAttenuationQuadratic;
@@ -16,9 +19,15 @@ uniform vec3 uDiffuseLightColor;
 uniform vec3 uSpecularLightColor;
 out vec4 fragColor;
 
+uniform sampler2D uSampler1;
+uniform sampler2D uSampler2;
+
 const float shininess = 32.0;
 
 void main() {
+
+    highp vec4 tColor1 = texture(uSampler1, vTextureCoord);
+    highp vec4 tColor2 = texture(uSampler2, vTextureCoord);
 
     vec3 lightDirection = normalize(uLightPosition - vPosition);
 
@@ -38,7 +47,7 @@ void main() {
     (uDiffuseLightColor * diffuseLightDot +
     uSpecularLightColor * specularLightParam) * attenuation;;
 
-    fragColor = vec4(vLightWeighting.rgb * vColor.rgb, vColor.a);
+    fragColor = ((1.0 - tColor2.a) * tColor1 + tColor2.a * tColor2 + vColor * 0.5) * vec4(vLightWeighting, 1);
 
 }
 

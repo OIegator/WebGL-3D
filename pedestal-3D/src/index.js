@@ -6,6 +6,12 @@ import ToonShadingFS from '../shaders/ToonShadingFS.glsl'
 import PhongFS from '../shaders/PhongFS.glsl'
 import {initBuffers, initColorBuffer} from "./initBuffers";
 import {drawCube} from "./drawCube.js";
+import gold_texture from "../textures/gold_block.png"
+import iron_texture from "../textures/iron_block.png"
+import copper_texture from "../textures/copper_block.png"
+import digit1_texture from "../textures/first.png"
+import digit2_texture from "../textures/second.png"
+import digit3_texture from "../textures/third.png"
 
 const canvas = document.querySelector('canvas');
 const textLight = document.getElementById('light-overlay');
@@ -65,8 +71,19 @@ function main() {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     }
 
-
     const buffers = initBuffers(gl);
+
+    const goldTexture = loadTexture(gl, gold_texture);
+    const silverTexture = loadTexture(gl, iron_texture);
+    const bronzeTexture = loadTexture(gl, copper_texture);
+    const digit1Texture = loadTexture(gl, digit1_texture);
+    const digit2Texture = loadTexture(gl, digit2_texture);
+    const digit3Texture = loadTexture(gl, digit3_texture);
+
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+
 
     window.addEventListener("keydown", checkKeyPressed);
 
@@ -83,6 +100,8 @@ function main() {
                     gl.getAttribLocation(shaderProgram, "aVertexNormal"),
                 vertexColor:
                     gl.getAttribLocation(shaderProgram, "aVertexColor"),
+                textureCoord:
+                    gl.getAttribLocation(shaderProgram, "aTextureCoord"),
             },
             uniformLocations: {
                 projectionMatrix:
@@ -105,7 +124,12 @@ function main() {
                     gl.getUniformLocation(shaderProgram, "uAttenuationQuadratic"),
                 ambientIntensity:
                     gl.getUniformLocation(shaderProgram, "uAmbientIntensity"),
+                uSampler1:
+                    gl.getUniformLocation(shaderProgram, "uSampler1"),
+                uSampler2:
+                    gl.getUniformLocation(shaderProgram, "uSampler2"),
             },
+
         };
 
 
@@ -113,17 +137,69 @@ function main() {
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
             gl.clearDepth(1.0);
             let colorBuffer = initColorBuffer(gl, [1.0, 0.85, 0.0, 1.0]);
-            drawCube(gl, programInfo, buffers, colorBuffer, "gold1", controls);
-            drawCube(gl, programInfo, buffers, colorBuffer, "gold2", controls);
+            drawCube(gl, programInfo, buffers, goldTexture, null, colorBuffer, "gold1", controls);
+            drawCube(gl, programInfo, buffers, goldTexture, digit1Texture, colorBuffer, "gold2", controls);
             colorBuffer = initColorBuffer(gl, [0.75, 0.75, 0.75, 1.0]);
-            drawCube(gl, programInfo, buffers, colorBuffer, "silver", controls);
+            drawCube(gl, programInfo, buffers, silverTexture, digit2Texture, colorBuffer, "silver", controls);
             colorBuffer = initColorBuffer(gl, [0.8, 0.5, 0.2, 1.0]);
-            drawCube(gl, programInfo, buffers, colorBuffer, "bronze", controls);
+            drawCube(gl, programInfo, buffers, bronzeTexture, digit3Texture, colorBuffer, "bronze", controls);
         }
         requestAnimationFrame(render);
     }
 
     requestAnimationFrame(render);
+}
+
+function loadTexture(gl, url) {
+    const texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+
+    // Because images have to be downloaded over the internet
+    // they might take a moment until they are ready.
+    // Until then put a single pixel in the texture, so we can
+    // use it immediately. When the image has finished downloading
+    // we'll update the texture with the contents of the image.
+    const level = 0;
+    const internalFormat = gl.RGBA;
+    const width = 1;
+    const height = 1;
+    const border = 0;
+    const srcFormat = gl.RGBA;
+    const srcType = gl.UNSIGNED_BYTE;
+    const pixel = new Uint8Array([0, 255, 0, 255]); // opaque blue
+    gl.texImage2D(
+        gl.TEXTURE_2D,
+        level,
+        internalFormat,
+        width,
+        height,
+        border,
+        srcFormat,
+        srcType,
+        pixel
+    );
+
+    const image = new Image();
+
+    image.onload = () => {
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.texImage2D(
+            gl.TEXTURE_2D,
+            level,
+            internalFormat,
+            srcFormat,
+            srcType,
+            image
+        );
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+
+    };
+
+    image.src = url;
+    return texture;
 }
 
 function initShaderProgram(gl, vsSource, fsSource) {
@@ -266,7 +342,7 @@ function checkKeyPressed(e) {
         }
     }
 
-    if (e.key === "ArrowDown") {
+    if (e.key === "ArrowUp") {
         switch (controls.current_controller) {
             case "lin":
                 controls.attenuation_linear -= 0.1;
@@ -280,7 +356,7 @@ function checkKeyPressed(e) {
         }
     }
 
-    if (e.key === "ArrowUp") {
+    if (e.key === "ArrowDown") {
         switch (controls.current_controller) {
             case "lin":
                 controls.attenuation_linear += 0.1;
@@ -293,6 +369,7 @@ function checkKeyPressed(e) {
                 break;
         }
     }
+
 
 }
 

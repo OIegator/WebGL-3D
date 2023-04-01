@@ -3,6 +3,7 @@
 in vec3 aVertexPosition;
 in vec3 aVertexNormal;
 in vec4 aVertexColor;
+in vec2 aTextureCoord;
 
 uniform mat4 uModelViewMatrix;
 uniform mat4 uProjectionMatrix;
@@ -19,9 +20,9 @@ uniform float uAttenuationQuadratic;
 out vec4 vColor;
 out vec3 vPosition;
 out vec3 vNormal;
-out vec3 vCameraPosition;
 
 out highp vec3 vLightWeighting;
+out highp vec2 vTextureCoord;
 
 const float shininess = 32.0;
 
@@ -49,5 +50,5 @@ void main() {
     vPosition = vertexPositionEye3;
     vColor = aVertexColor;
     vNormal = normal;
-    vCameraPosition = viewVectorEye;
+    vTextureCoord = aTextureCoord;
 }
