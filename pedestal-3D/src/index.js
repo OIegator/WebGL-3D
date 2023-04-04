@@ -18,6 +18,7 @@ const textLight = document.getElementById('light-overlay');
 const textShade = document.getElementById('shade-overlay');
 const verticalCtrl = document.getElementById('vertical-controller-overlay');
 const horizontalCtrl = document.getElementById('horizontal-controller-overlay');
+const textureCtrl = document.getElementById('texture-overlay');
 let gl;
 
 let controls = {
@@ -38,6 +39,7 @@ let controls = {
     fs_ind: 0,
     vs_list: [LambertVS, PhongVS, BlinnPhongVS],
     vs_ind: 0,
+    texture_type: 0,
 }
 
 function initWebGL(canvas) {
@@ -128,6 +130,8 @@ function main() {
                     gl.getUniformLocation(shaderProgram, "uSampler1"),
                 uSampler2:
                     gl.getUniformLocation(shaderProgram, "uSampler2"),
+                uTextureFlag:
+                    gl.getUniformLocation(shaderProgram, "uTextureFlag"),
             },
 
         };
@@ -249,6 +253,19 @@ function shader2string(shader) {
     }
 }
 
+function texture2string(texture_mode) {
+    switch (texture_mode) {
+        case 0:
+            return "Digits"
+        case 1:
+            return "Textures"
+        case 2:
+            return "Digits + Textures"
+        case 3:
+            return "Digits + Textures + Color"
+    }
+}
+
 function checkKeyPressed(e) {
 
 
@@ -286,6 +303,12 @@ function checkKeyPressed(e) {
         controls.current_vs = controls.vs_list[++controls.vs_ind % controls.vs_list.length];
         textLight.innerText = "Light Model: " + shader2string(controls.vs_list[controls.vs_ind % controls.vs_list.length]);
     }
+
+    if (e.key === "t") {
+        controls.texture_type = ++controls.texture_type % 4;
+        textureCtrl.innerText = "Texture Model: " + texture2string(controls.texture_type);
+    }
+
     if (e.key === "1") {
         controls.current_controller = "lin";
         verticalCtrl.innerText = "Adjustment Controller: Linear attenuation"

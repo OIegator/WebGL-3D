@@ -9,6 +9,7 @@ in vec4 vColor;
 
 uniform sampler2D uSampler1;
 uniform sampler2D uSampler2;
+uniform int uTextureFlag;
 
 out vec4 fragColor;
 
@@ -16,5 +17,20 @@ void main() {
     highp vec4 tColor1 = texture(uSampler1, vTextureCoord);
     highp vec4 tColor2 = texture(uSampler2, vTextureCoord);
 
-    fragColor = ((1.0 - tColor2.a) * tColor1 + tColor2.a * tColor2 + vColor * 0.5) * vec4(vLightWeighting, 1);
+    switch (uTextureFlag) {
+        case 0:
+        fragColor = tColor2 * vec4(vLightWeighting, 1);
+        break;
+        case 1:
+        fragColor = tColor1 * vec4(vLightWeighting, 1);
+        break;
+        case 2:
+        fragColor = ((1.0 - tColor2.a) * tColor1 + tColor2.a * tColor2) * vec4(vLightWeighting, 1);
+        break;
+        case 3:
+        fragColor = ((1.0 - tColor2.a) * tColor1 + tColor2.a * tColor2 + vColor * 0.5) * vec4(vLightWeighting, 1);
+        break;
+        default:
+        fragColor = ((1.0 - tColor2.a) * tColor1 + tColor2.a * tColor2 + vColor * 0.5) * vec4(vLightWeighting, 1);
+    }
 }

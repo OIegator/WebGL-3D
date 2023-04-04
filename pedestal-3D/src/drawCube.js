@@ -9,6 +9,7 @@ function drawCube(gl, programInfo, buffers, texture1, texture2, colorBuffer, cub
     const projectionMatrix = mat4.create();
 
     mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
+    mat4.translate(projectionMatrix, projectionMatrix, [0.0, -1, 0.0]);
 
     const modelViewMatrix = mat4.create();
 
@@ -134,6 +135,8 @@ function drawCube(gl, programInfo, buffers, texture1, texture2, colorBuffer, cub
 
     // Tell the shader we bound the texture to texture unit 0
     gl.uniform1i(programInfo.uniformLocations.uSampler1, 0);
+
+    gl.uniform1i(programInfo.uniformLocations.uTextureFlag, controls.texture_type);
 
     if (texture2 != null) {
         gl.activeTexture(gl.TEXTURE1);

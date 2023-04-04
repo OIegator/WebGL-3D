@@ -27,6 +27,17 @@
             z-index: 1;
         }
 
+        #texture-overlay {
+            position: absolute;
+            top: 50px;
+            left: 300px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 1px black;
+            z-index: 1;
+        }
+
         #vertical-controller-overlay {
             position: absolute;
             top: 440px;
@@ -62,6 +73,7 @@
 <canvas width="780" height="480"></canvas>
 
 <div id="light-overlay">Light Model: Lambert</div>
+<div id="texture-overlay">Texture Model: Digits</div>
 <div id="shade-overlay">Shading Model: Goureau</div>
 <div id="vertical-controller-overlay">Adjustment Controller: Linear attenuation</div>
 <div id="horizontal-controller-overlay">Rotation Controller: Gold pedestal</div>
@@ -79,15 +91,19 @@
             <li>Rotate right: &#x2192;</li>
             <li>Rotate left: &#x2190;</li>
         </ul>
+        <h3>Texture mod</h3>
+        <ul>
+            <li>Switch mod: <b>T</b></li>
+        </ul>
     </div>
     <div>
         <h3>Rotation mode</h3>
         <ul>
-            <li>Rotate gold pedestal: G</li>
-            <li>Rotate silver pedestal: S</li>
-            <li>Rotate bronze pedestal: B</li>
-            <li>Rotate pedestal around its axis: P</li>
-            <li>Rotate pedestal around scene axis: C</li>
+            <li>Rotate gold pedestal: <b>G</b></li>
+            <li>Rotate silver pedestal: <b>S</b></li>
+            <li>Rotate bronze pedestal: <b>B</b></li>
+            <li>Rotate pedestal around its axis: <b>P</b></li>
+            <li>Rotate pedestal around scene axis: <b>C</b></li>
         </ul>
     </div>
     <div>

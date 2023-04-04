@@ -22,6 +22,7 @@ out vec4 fragColor;
 
 uniform sampler2D uSampler1;
 uniform sampler2D uSampler2;
+uniform int uTextureFlag;
 
 const float shininess = 32.0;
 
@@ -42,10 +43,22 @@ void main() {
     vec3 specular = uSpecularLightColor * pow(max(dot(normalize(reflect(-normalize(uLightPosition - vPosition), normalize(vNormal))), normalize(-vPosition)), 0.0), shininess);
     vec3 vLightWeighting = uAmbientLightColor * uAmbientIntensity +
           (specular + diffuse) * attenuation;
-    fragColor = ((1.0 - tColor2.a) * tColor1
-                + tColor2.a * tColor2
-                + 0.5 * vColor ) * vec4(vLightWeighting, 1);
-
+    switch (uTextureFlag) {
+        case 0:
+        fragColor = tColor2 * vec4(vLightWeighting, 1);
+        break;
+        case 1:
+        fragColor = tColor1 * vec4(vLightWeighting, 1);
+        break;
+        case 2:
+        fragColor = ((1.0 - tColor2.a) * tColor1 + tColor2.a * tColor2) * vec4(vLightWeighting, 1);
+        break;
+        case 3:
+        fragColor = ((1.0 - tColor2.a) * tColor1 + tColor2.a * tColor2 + vColor * 0.5) * vec4(vLightWeighting, 1);
+        break;
+        default:
+        fragColor = ((1.0 - tColor2.a) * tColor1 + tColor2.a * tColor2 + vColor * 0.5) * vec4(vLightWeighting, 1);
+    }
     // Add cell shading
     if (fragColor.r > 0.8) {
         fragColor.rgb = fragColor.rgb;
